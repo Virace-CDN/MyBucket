@@ -20,19 +20,32 @@ jobs:
           echo "$response" > release_info.json
           tag_name=$(jq -r '.tag_name' release_info.json)
           asset_url=$(jq -r '.assets[0].browser_download_url' release_info.json)
+          if [ -z "$tag_name" ] || [ -z "$asset_url" ]; then
+            echo "Failed to fetch release info"
+            exit 1
+          fi
           echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
           echo "ASSET_URL=$asset_url" >> $GITHUB_ENV
 
       - name: Download latest release
         run: |
+          if [ -z "$ASSET_URL" ]; then
+            echo "ASSET_URL is not set"
+            exit 1
+          fi
           curl -L -o chromeplus.7z "$ASSET_URL"
           sha256sum chromeplus.7z | awk '{ print $1 }' > hash.txt
 
       - name: Update manifest
         run: |
+          if [ ! -f bucket/chromeplus.json ]; then
+            echo "bucket/chromeplus.json does not exist"
+            exit 1
+          fi
           version=${TAG_NAME#v}
           hash=$(cat hash.txt)
-          jq ".version = \"$version\" | .architecture[\"64bit\"].url = \"$ASSET_URL\" | .architecture[\"64bit\"].hash = \"$hash\"" bucket/chromeplus_template.json > bucket/chromeplus.json
+          jq ".version = \"$version\" | .architecture[\"64bit\"].url = \"$ASSET_URL\" | .architecture[\"64bit\"].hash = \"$hash\"" bucket/chromeplus.json > bucket/chromeplus_updated.json
+          mv bucket/chromeplus_updated.json bucket/chromeplus.json
 
       - name: Commit and Push changes
         run: |
