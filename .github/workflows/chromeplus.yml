@@ -15,29 +15,24 @@ jobs:
 
       - name: Fetch latest release info
         id: get_release
-        uses: actions/github-script@v3
-        with:
-          script: |
-            const response = await github.repos.listReleases({
-              owner: 'Bush2021',
-              repo: 'chrome_plus'
-            });
-            const latestRelease = response.data[0];
-            return {
-              tag_name: latestRelease.tag_name,
-              asset_url: latestRelease.assets[0].browser_download_url
-            };
+        run: |
+          response=$(curl -s https://api.github.com/repos/Bush2021/chrome_plus/releases/latest)
+          echo "$response" > release_info.json
+          tag_name=$(jq -r '.tag_name' release_info.json)
+          asset_url=$(jq -r '.assets[0].browser_download_url' release_info.json)
+          echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
+          echo "ASSET_URL=$asset_url" >> $GITHUB_ENV
 
       - name: Download latest release
         run: |
-          curl -L -o chromeplus.7z ${{ steps.get_release.outputs.asset_url }}
+          curl -L -o chromeplus.7z "$ASSET_URL"
           sha256sum chromeplus.7z | awk '{ print $1 }' > hash.txt
 
       - name: Update manifest
         run: |
-          version=$(echo ${{ steps.get_release.outputs.tag_name }} | sed 's/v//')
+          version=${TAG_NAME#v}
           hash=$(cat hash.txt)
-          jq ".version = \"$version\" | .architecture[\"64bit\"].url = \"${{ steps.get_release.outputs.asset_url }}\" | .architecture[\"64bit\"].hash = \"$hash\"" bucket/chromeplus_template.json > bucket/chromeplus.json
+          jq ".version = \"$version\" | .architecture[\"64bit\"].url = \"$ASSET_URL\" | .architecture[\"64bit\"].hash = \"$hash\"" bucket/chromeplus_template.json > bucket/chromeplus.json
 
       - name: Commit and Push changes
         run: |
