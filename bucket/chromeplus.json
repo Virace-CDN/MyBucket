@@ -1,0 +1,32 @@
+{
+    "version": "",
+    "description": "Chrome++ plugin",
+    "homepage": "https://github.com/Bush2021/chrome_plus",
+    "license": "MIT",
+    "architecture": {
+      "64bit": {
+        "url": "",
+        "hash": "",
+        "extract_dir": "chrome_plus"
+      }
+    },
+    "installer": {
+      "script": [
+        "Expand-7zipArchive \"$dir\\chromeplus.7z\" -DestinationPath \"$dir\"",
+        "Remove-Item \"$dir\\chromeplus.7z\"",
+        "if (Test-Path \"$dir\\x64\\App\\chrome++.ini\") {",
+        "    (Get-Content \"$dir\\x64\\App\\chrome++.ini\") -replace 'keep_last_tab=1', 'keep_last_tab=0' | Set-Content \"$dir\\x64\\App\\chrome++.ini\"",
+        "}"
+      ]
+    },
+    "checkver": {
+      "github": "https://github.com/Bush2021/chrome_plus"
+    },
+    "autoupdate": {
+      "architecture": {
+        "64bit": {
+          "url": "https://github.com/Bush2021/chrome_plus/releases/download/v$version/Chrome++_v$version_x86_x64_$(date +'%Y-%m-%d').7z"
+        }
+      }
+    }
+}
