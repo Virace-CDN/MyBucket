@@ -22,7 +22,7 @@
   "autoupdate": {
     "architecture": {
       "64bit": {
-        "url": "https://github.com/Bush2021/chrome_plus/releases/download/v$version/Chrome++_v$version_x86_x64_$(date +'%Y-%m-%d').7z"
+        "url": "https://github.com/Bush2021/chrome_plus/releases/download/v$version/Chrome++_v$version_x86_x64_$matchDate.7z"
       }
     }
   }
