@@ -1,29 +1,29 @@
 {
-  "version": "1.8.9",
-  "description": "Chrome++ plugin",
-  "homepage": "https://github.com/Bush2021/chrome_plus",
-  "license": "MIT",
-  "architecture": {
-    "64bit": {
-      "url": "https://github.com/Bush2021/chrome_plus/releases/download/1.8.9/Chrome%2B%2B_v1.8.9_x86_x64_2024-06-26.7z",
-      "hash": "010e68cb9f96d9ced31649e3d3419e81660879e9542ab49dcf55eef0a270f370"
-    }
-  },
-  "installer": {
-    "script": [
-      "if (Test-Path \"$dir\\x64\\App\\chrome++.ini\") {",
-      "    (Get-Content \"$dir\\x64\\App\\chrome++.ini\") -replace 'keep_last_tab=1', 'keep_last_tab=0' | Set-Content \"$dir\\x64\\App\\chrome++.ini\"",
-      "}"
-    ]
-  },
-  "checkver": {
-    "github": "https://github.com/Bush2021/chrome_plus"
-  },
-  "autoupdate": {
+    "version": "1.8.9",
+    "description": "Chrome++ plugin",
+    "homepage": "https://github.com/Bush2021/chrome_plus",
+    "license": "MIT",
     "architecture": {
-      "64bit": {
-        "url": "https://github.com/Bush2021/chrome_plus/releases/download/v$version/Chrome++_v$version_x86_x64_$matchDate.7z"
-      }
+        "64bit": {
+            "url": "https://github.com/Bush2021/chrome_plus/releases/download/1.8.9/Chrome%2B%2B_v1.8.9_x86_x64_2024-06-26.7z",
+            "hash": "010e68cb9f96d9ced31649e3d3419e81660879e9542ab49dcf55eef0a270f370"
+        }
+    },
+    "installer": {
+        "script": [
+            "if (Test-Path \"$dir\\x64\\App\\chrome++.ini\") {",
+            "    (Get-Content \"$dir\\x64\\App\\chrome++.ini\") -replace 'keep_last_tab=1', 'keep_last_tab=0' | Set-Content \"$dir\\x64\\App\\chrome++.ini\"",
+            "}"
+        ]
+    },
+    "checkver": {
+        "github": "https://github.com/Bush2021/chrome_plus"
+    },
+    "autoupdate": {
+        "architecture": {
+            "64bit": {
+                "url": "https://github.com/Bush2021/chrome_plus/releases/download/v$version/Chrome++_v$version_x86_x64_$matchDate.7z"
+            }
+        }
     }
-  }
 }
