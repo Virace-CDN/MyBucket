@@ -27,7 +27,24 @@ jobs:
           echo "TAG_NAME=$tag_name" >> $GITHUB_ENV
           echo "ASSET_URL=$asset_url" >> $GITHUB_ENV
 
+      - name: Check current manifest version
+        id: get_current_version
+        run: |
+          current_version=$(jq -r '.version' bucket/chromeplus.json)
+          echo "CURRENT_VERSION=$current_version" >> $GITHUB_ENV
+
+      - name: Compare versions
+        id: version_check
+        run: |
+          if [ "$TAG_NAME" = "$CURRENT_VERSION" ]; then
+            echo "Versions match. No update needed."
+            exit 0
+          else
+            echo "Versions do not match. Update needed."
+          fi
+
       - name: Download latest release
+        if: steps.version_check.outputs.result == 'false'
         run: |
           if [ -z "$ASSET_URL" ]; then
             echo "ASSET_URL is not set"
@@ -37,6 +54,7 @@ jobs:
           sha256sum chromeplus.7z | awk '{ print $1 }' > hash.txt
 
       - name: Update manifest
+        if: steps.version_check.outputs.result == 'false'
         run: |
           if [ ! -f bucket/chromeplus.json ]; then
             echo "bucket/chromeplus.json does not exist"
@@ -48,6 +66,7 @@ jobs:
           mv bucket/chromeplus_updated.json bucket/chromeplus.json
 
       - name: Commit and Push changes
+        if: steps.version_check.outputs.result == 'false'
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
